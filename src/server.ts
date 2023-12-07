@@ -1,12 +1,17 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Application } from 'express';
+import morgan from 'morgan';
+import router from './routes';
 
-const app: Express = express();
+// Express Application
+const app: Application = express();
 
-app.get('/', async (req: Request, res: Response) => {
-    res.json({
-        msg: 'server is up',
-    });
-});
+// middlewares
+app.use(express.json());
+app.use(morgan('tiny'));
+app.use(express.static('public'));
+
+// routes
+app.use('/api', router);
 
 // eslint-disable-next-line no-console
 app.listen(3000, () => console.log('server is running'));
