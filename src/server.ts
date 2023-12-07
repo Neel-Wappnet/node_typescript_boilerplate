@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import morgan from 'morgan';
 import router from './routes';
+import environment from './configs';
 
 // Express Application
 const app: Application = express();
@@ -14,4 +15,4 @@ app.use(express.static('public'));
 app.use('/api', router);
 
 // eslint-disable-next-line no-console
-app.listen(3000, () => console.log('server is running'));
+app.listen(environment.port, () => console.log(`server is running on ${environment.port}`));

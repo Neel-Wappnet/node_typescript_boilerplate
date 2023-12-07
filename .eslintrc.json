@@ -17,7 +17,7 @@
         "semi": ["error", "always"],
         "camelcase": "error",
         "no-console": "error",
-        "complexity":"error",
+        "complexity": "error",
         "no-unused-expressions": "error",
         "no-undef": "error"
     }
