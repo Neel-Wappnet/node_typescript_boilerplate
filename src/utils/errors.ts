@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 
-class ApiError extends Error {
+export class ApiError extends Error {
     statusCode: StatusCodes;
 
     constructor(statusCode = 500, message: string, stack = '') {
@@ -13,5 +13,3 @@ class ApiError extends Error {
         }
     }
 }
-
-export default ApiError;

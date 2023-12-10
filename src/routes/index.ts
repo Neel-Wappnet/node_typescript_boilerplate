@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import ApiError from '../utils/errors';
+import { ApiError } from '../utils';
 
 const router = Router();
 
