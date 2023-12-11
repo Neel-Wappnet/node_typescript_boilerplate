@@ -1,16 +1,20 @@
-import { Model, Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IUser } from '../types';
 import { NextFunction } from 'express';
 import { compare, hash } from 'bcrypt';
 import { ApiError } from '../utils';
 import { StatusCodes } from 'http-status-codes';
 
-const userSchema = new Schema<IUser>(
+interface IUserDocument extends IUser, Document {
+    comparePasswords: (password: string) => Promise<boolean>;
+}
+
+const userSchema: Schema<IUserDocument> = new Schema(
     {
         first_name: { type: 'string', required: true },
         last_name: { type: 'string', required: false },
         password: { type: 'string', required: true },
-        email: { type: 'string', required: true },
+        email: { type: 'string', trim: true, required: true },
         refresh_token: { type: 'string', required: false },
     },
     {
@@ -18,7 +22,7 @@ const userSchema = new Schema<IUser>(
     },
 );
 
-userSchema.methods.comparePasswords = async function (this, password: string) {
+userSchema.methods.comparePasswords = async function (password: string) {
     return compare(password, this.password);
 };
 
@@ -33,4 +37,4 @@ userSchema.pre('save', async function (this, next: NextFunction) {
     }
 });
 
-export const User: Model<IUser> = model<IUser>('User', userSchema);
+export const User = model<IUserDocument>('User', userSchema);

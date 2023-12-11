@@ -31,8 +31,8 @@ export const register = promiseHandler(async (req: Request, res: Response) => {
     return responsePipe(res, StatusCodes.CREATED, true, USER_REGISTERED, data);
 });
 
-export const login = promiseHandler(async (req: Request, res: Response) => {
-    const payload = req.body;
+export const login = promiseHandler(async (req: Request, res: Response): Promise<Response> => {
+    const payload: LoginDTO = req.body;
     const { status, errors } = await validationPipe(LoginDTO, payload);
 
     if (status) {
@@ -42,7 +42,7 @@ export const login = promiseHandler(async (req: Request, res: Response) => {
     const user = await userService.getUserByEmail(payload.email);
 
     if (user) {
-        const checkPassword = userService.comparePasswords(user._id, user.password);
+        const checkPassword = user.comparePasswords(payload.password);
 
         if (checkPassword) {
             const tokens = signJWT({

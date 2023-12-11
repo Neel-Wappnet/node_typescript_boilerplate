@@ -7,8 +7,8 @@ export const responsePipe = (
     status: boolean,
     message: string,
     data?: object | Array<object> | string,
-) => {
-    res.status(statusCode).json({
+): Response => {
+    return res.status(statusCode).json({
         status,
         message,
         data,

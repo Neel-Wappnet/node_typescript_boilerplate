@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongoose';
 import { User } from '../models';
 import { IUser } from '../types';
-import { logger } from '../utils';
+import { UserRegisterDTO } from '../validators';
 
-export const createUser = async (payload: IUser): Promise<IUser> => {
+export const createUser = async (payload: UserRegisterDTO): Promise<IUser> => {
     const user = new User(payload);
     return user.save();
 };
@@ -27,9 +27,4 @@ export const updateUser = async (_id: ObjectId, payload: IUser): Promise<IUser> 
 
 export const deleteUser = (_id: ObjectId) => {
     return User.findByIdAndDelete(_id);
-};
-
-export const comparePasswords = (_id: ObjectId, password: string): boolean => {
-    logger.warn({ _id, password });
-    return true;
 };
