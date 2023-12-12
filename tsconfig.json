@@ -6,7 +6,8 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
-        "rootDir": "src"
+        "rootDir": "src",
+        "experimentalDecorators": true
     },
     "lib": ["es2021"]
 }

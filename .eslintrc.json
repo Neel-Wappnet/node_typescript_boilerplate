@@ -11,13 +11,11 @@
     },
     "plugins": ["@typescript-eslint"],
     "rules": {
-        "indent": ["error", 4],
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
-        "camelcase": "error",
         "no-console": "error",
-        "complexity":"error",
+        "complexity": "error",
         "no-unused-expressions": "error",
         "no-undef": "error"
     }

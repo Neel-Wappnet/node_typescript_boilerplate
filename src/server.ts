@@ -1,12 +1,32 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
+import morgan from 'morgan';
+import compression from 'compression';
+import helmet from 'helmet';
+import router from './routes';
+import environment from './configs';
+import { ApiError, logger, responsePipe } from './utils';
+import connectDB from './db';
 
-const app: Express = express();
+// Express Application
+const app: Application = express();
 
-app.get('/', async (req: Request, res: Response) => {
-    res.json({
-        msg: 'server is up',
-    });
+// middlewares
+app.use(express.json());
+app.use(morgan('tiny'));
+app.use(helmet());
+app.use(compression());
+app.use(express.static('public'));
+
+// routes
+app.use(router);
+
+// error handler
+app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
+    responsePipe(res, err.statusCode, false, err.message, err.stack);
+    next();
 });
 
-// eslint-disable-next-line no-console
-app.listen(3000, () => console.log('server is running'));
+app.listen(environment.port, async () => {
+    await connectDB();
+    logger.info(`server is running on ${environment.port}`);
+});
