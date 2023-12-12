@@ -8,4 +8,5 @@ export interface IUser {
     email: string;
     refresh_token?: string;
     comparePasswords(password: string): Promise<boolean>;
+    deleteRefreshToken(): Promise<void>;
 }

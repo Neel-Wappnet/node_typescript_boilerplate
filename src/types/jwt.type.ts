@@ -1,5 +1,7 @@
+import { ObjectId } from 'mongoose';
+
 export type IJWTSign = {
-    _id: string;
+    _id: ObjectId;
     first_name: string;
     email: string;
 };

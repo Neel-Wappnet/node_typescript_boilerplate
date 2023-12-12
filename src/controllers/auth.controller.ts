@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import {
     INVALID_CREDENTIALS,
     LOGIN_SUCCESS,
+    LOGOUT_SUCCESS,
     USER_ALREADY_EXIST,
     USER_REGISTERED,
     VALIDATION_FAILED,
@@ -11,6 +12,7 @@ import { validationPipe, responsePipe, signJWT } from '../utils';
 import { LoginDTO, UserRegisterDTO } from '../validators';
 import { userService } from '../services';
 import { promiseHandler } from '../utils/promiseHandler';
+import { IJWTSign } from '../types';
 
 export const register = promiseHandler(async (req: Request, res: Response) => {
     const payload: UserRegisterDTO = req.body;
@@ -20,7 +22,7 @@ export const register = promiseHandler(async (req: Request, res: Response) => {
         return responsePipe(res, StatusCodes.BAD_REQUEST, false, VALIDATION_FAILED, errors);
     }
 
-    const isExist = userService.getUserByEmail(payload.email);
+    const isExist = await userService.getUserByEmail(payload.email);
 
     if (isExist) {
         return responsePipe(res, StatusCodes.CONFLICT, false, USER_ALREADY_EXIST);
@@ -42,16 +44,16 @@ export const login = promiseHandler(async (req: Request, res: Response): Promise
     const user = await userService.getUserByEmail(payload.email);
 
     if (user) {
-        const checkPassword = user.comparePasswords(payload.password);
+        const checkPassword = await user.comparePasswords(payload.password);
 
         if (checkPassword) {
             const tokens = signJWT({
-                _id: String(user._id),
+                _id: user._id,
                 first_name: user.first_name,
                 email: user.email,
             });
 
-            userService.updateUser(user._id, { ...user, refresh_token: tokens.refreshToken });
+            await userService.updateUser(user._id, { ...user, refresh_token: tokens.refreshToken });
 
             return responsePipe(res, StatusCodes.OK, true, LOGIN_SUCCESS, tokens);
         }
@@ -61,13 +63,13 @@ export const login = promiseHandler(async (req: Request, res: Response): Promise
 });
 
 export const logout = async (req: Request, res: Response) => {
-    const payload = req.body;
+    const payload: IJWTSign = req['user'];
 
-    res.status(StatusCodes.CREATED).json({
-        status: true,
-        data: payload,
-        message: USER_REGISTERED,
-    });
+    const user = await userService.getUserById(payload._id);
+
+    await user.deleteRefreshToken();
+
+    return responsePipe(res, StatusCodes.OK, true, LOGOUT_SUCCESS);
 };
 
 export const forgotPassword = async (req: Request, res: Response) => {

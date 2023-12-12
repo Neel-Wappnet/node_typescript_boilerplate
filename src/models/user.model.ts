@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 
 interface IUserDocument extends IUser, Document {
     comparePasswords: (password: string) => Promise<boolean>;
+    deleteRefreshToken: () => Promise<void>;
 }
 
 const userSchema: Schema<IUserDocument> = new Schema(
@@ -23,7 +24,14 @@ const userSchema: Schema<IUserDocument> = new Schema(
 );
 
 userSchema.methods.comparePasswords = async function (password: string) {
-    return compare(password, this.password);
+    const user = this as IUserDocument;
+    return await compare(password, user.password);
+};
+
+userSchema.methods.deleteRefreshToken = async function (): Promise<void> {
+    const user = this as IUserDocument;
+    delete user.refresh_token;
+    await User.updateOne({ _id: user._id }, { user });
 };
 
 userSchema.pre('save', async function (this, next: NextFunction) {
